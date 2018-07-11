@@ -11,7 +11,7 @@ import java.util.Map;
  * @Description: 查询测试
  * @date 2018/7/11 17:44
  */
-public class ElasticsearchQueryTest {
+public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
 
     private static final Logger log = Logger.getLogger(ElasticsearchQueryTest.class);
 

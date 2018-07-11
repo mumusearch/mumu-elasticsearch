@@ -140,9 +140,12 @@ public class ElasticsearchQuery {
                 datas.add(searchHit.getSource());
             }
             return datas;
-        } finally {
+        } catch (Exception e) {
+            log.error(e);
+        }  finally {
             pool.removeClient(elasticsearchClient);
         }
+        return null;
     }
 
     /**

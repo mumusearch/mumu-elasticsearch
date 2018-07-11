@@ -11,7 +11,7 @@ import java.util.*;
  * @Description: 文档添加
  * @date 2018-06-03 18:34
  */
-public class ElasticsearchBulkTest {
+public class ElasticsearchBulkTest extends ElasticsearchBaseTest{
     public ElasticsearchBulk elasticsearchBulk = new ElasticsearchBulk();
 
     @Test
