@@ -14,9 +14,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <nexus.url>192.168.0.25:8081</nexus.url>
-        <!--<elasticsearch.version>1.2.0</elasticsearch.version>-->
         <hadoop.version>2.8.1</hadoop.version>
-        <!--<elasticsearch.version>2.4.1</elasticsearch.version>-->
         <elasticsearch.version>5.6.10</elasticsearch.version>
     </properties>
 
@@ -35,11 +33,6 @@
             <version>1.2.17</version>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${elasticsearch.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
@@ -116,6 +109,7 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>config.properties</include>
+                    <include>log4j2.xml</include>
                 </includes>
             </resource>
             <resource>
@@ -230,7 +224,15 @@
             </properties>
         </profile>
 
-        <!-- 测试环境 -->
+        <!-- travis测试环境 -->
+        <profile>
+            <id>travis</id>
+            <properties>
+                <env>travis</env>
+            </properties>
+        </profile>
+
+        <!-- 工业互联网 -->
         <profile>
             <id>gynet</id>
             <properties>
