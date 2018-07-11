@@ -6,6 +6,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -30,20 +31,13 @@ public class ElasticsearchClient {
         if (client != null) {
             return client;
         }
-        Settings settings = Settings.settingsBuilder()
-                .put("index.number_of_shards", ElasticsearchConfig.getInteger("elasticsearch.index.number_of_shards", 5))
-                .put("index.number_of_replicas", ElasticsearchConfig.getInteger("elasticsearch.index.number_of_replicas", 0))
-                .put("cluster.name", ElasticsearchConfig.getProperty("elasticsearch.cluster.name", "elasticsearchClusterName"))
+
+        Settings settings = Settings.builder()
+                .put("cluster.name", ElasticsearchConfig.getProperty("elasticsearch.cluster.name", "elasticsearch"))
                 .put("transport.tcp.compress", ElasticsearchConfig.getBoolean("elasticsearch.transport.tcp.compress", true))
+                .put("transport.tcp.compress", ElasticsearchConfig.getBoolean("elasticsearch.transport.tcp.compress", true))
+                .put("client.transport.sniff", ElasticsearchConfig.getBoolean("elasticsearch.client.transport.sniff", false))
                 .put("client.transport.ping_timeout", ElasticsearchConfig.getProperty("elasticsearch.client.transport.ping_timeout", "30s"))//默认为5s，此参数指定了ping命令响应的超时时间。
-                .put("client.reansport.nodes_sampler_interval", ElasticsearchConfig.getProperty("elasticsearch.client.reansport.nodes_sampler_interval", "30s"))//默认为5s，此参数指定了检查节点可用性的时间间隔。
-                .put("client.transport.sniff", ElasticsearchConfig.getBoolean("elasticsearch.client.transport.sniff", true))
-                .put("index.routing.allocation.total_shards_per_node", ElasticsearchConfig.getInteger("elasticsearch.index.routing.allocation.total_shards_per_node", 2))
-                .put("index.routing.allocation.disable_allocation", ElasticsearchConfig.getBoolean("elasticsearch.index.routing.allocation.disable_allocation", true))
-                .put("index.compress", ElasticsearchConfig.getBoolean("elasticsearch.index.compress", true))
-                .put("index.store.compress.stored", ElasticsearchConfig.getBoolean("elasticsearch.index.store.compress.stored", true))
-                .put("index.store.compress.tv", ElasticsearchConfig.getBoolean("elasticsearch.index.store.compress.tv", true))
-                .put("index.refresh_interval", ElasticsearchConfig.getProperty("elasticsearch.index.refresh_interval", "120s"))
                 .build();
         String[] hostnames = ElasticsearchConfig.getArray("elasticsearch.transport.host", ",");
         String[] ports = ElasticsearchConfig.getArray("elasticsearch.transport.port", ",");
@@ -55,7 +49,8 @@ public class ElasticsearchClient {
             for (int i = 0; i < hostnames.length; i++) {
                 transportAddresses[i] = new InetSocketTransportAddress(InetAddress.getByName(hostnames[i]), Integer.parseInt(ports[i]));
             }
-            TransportClient client = TransportClient.builder().settings(settings).build().addTransportAddresses(transportAddresses);
+            TransportClient client = new PreBuiltTransportClient(settings)
+                    .addTransportAddresses(transportAddresses);
             log.info("初始化elasticsearch连接....");
             return client;
         } catch (UnknownHostException e) {

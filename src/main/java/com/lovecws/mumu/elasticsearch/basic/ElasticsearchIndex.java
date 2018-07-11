@@ -2,6 +2,7 @@ package com.lovecws.mumu.elasticsearch.basic;
 
 import com.lovecws.mumu.elasticsearch.client.ElasticsearchClient;
 import com.lovecws.mumu.elasticsearch.client.ElasticsearchPool;
+import com.lovecws.mumu.elasticsearch.common.ElasticsearchConfig;
 import com.lovecws.mumu.elasticsearch.common.ElasticsearchMapping;
 import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
 import org.apache.log4j.Logger;
@@ -17,6 +18,7 @@ import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.io.stream.OutputStreamStreamOutput;
+import org.elasticsearch.common.settings.Settings;
 
 import java.util.List;
 
@@ -49,9 +51,15 @@ public class ElasticsearchIndex {
                 log.info("index [" + indexName + "] exists!");
                 return false;
             }
+            Settings settings = Settings.builder()
+                    .put("index.number_of_shards", ElasticsearchConfig.getInteger("elasticsearch.index.number_of_shards", 5))
+                    .put("index.number_of_replicas", ElasticsearchConfig.getInteger("elasticsearch.index.number_of_replicas", 0))
+                    .put("index.refresh_interval", ElasticsearchConfig.getProperty("elasticsearch.index.refresh_interval", "120s"))
+                    .build();
+
             CreateIndexResponse createIndexResponse = transportClient.admin().indices()
                     .prepareCreate(indexName)
-                    .setSettings(transportClient.settings())
+                    .setSettings(settings)
                     .addAlias(new Alias(aliasName))
                     .addMapping(typeName, ElasticsearchMapping.mapping(typeName, mappings))
                     .setUpdateAllTypes(true)

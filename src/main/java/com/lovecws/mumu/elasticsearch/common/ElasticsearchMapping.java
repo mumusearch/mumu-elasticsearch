@@ -30,9 +30,6 @@ public class ElasticsearchMapping {
                     .startObject("_all")
                     .field("enabled", false)
                     .endObject()
-                    .startObject("_ttl")
-                    .field("enabled", false)
-                    .endObject()
                     .startObject("properties");
             for (MappingEntity mapping : mappings) {
                 contentBuilder

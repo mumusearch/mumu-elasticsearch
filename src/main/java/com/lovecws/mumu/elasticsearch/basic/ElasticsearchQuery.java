@@ -110,7 +110,7 @@ public class ElasticsearchQuery {
             SearchResponse searchResponse = transportClient.prepareSearch(indexName)
                     .setTypes(typeName)
                     .setScroll("1m")
-                    .setSearchType(SearchType.SCAN)
+                    .setSearchType(SearchType.DEFAULT)
                     .setQuery(new TermQueryBuilder(fieldName, fieldValue))
                     .setSize(batchSize)
                     .get();
