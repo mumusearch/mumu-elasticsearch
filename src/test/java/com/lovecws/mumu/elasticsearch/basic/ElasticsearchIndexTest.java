@@ -2,6 +2,8 @@ package com.lovecws.mumu.elasticsearch.basic;
 
 import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
 import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -102,12 +104,14 @@ public class ElasticsearchIndexTest {
     public void deleteIndex() {
         boolean deleteIndex = elasticsearchIndex.deleteIndex("gynetres_ignore");
         log.info(deleteIndex ? "索引删除操作成功" : "索引删除操作失败");
+        createIndex();
     }
 
     @Test
     public void closeIndex() {
         boolean deleteIndex = elasticsearchIndex.closeIndex("dns_domainparse_2018_06_02");
         log.info(deleteIndex ? "索引关闭操作成功" : "索引关闭操作失败");
+        openIndex();
     }
 
     @Test

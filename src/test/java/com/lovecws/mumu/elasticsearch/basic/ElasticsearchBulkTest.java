@@ -20,7 +20,7 @@ public class ElasticsearchBulkTest {
         valueMap.put("id", 1l);
         valueMap.put("task_id", 1l);
         valueMap.put("task_instance_id", 1l);
-        valueMap.put("create_time",DateUtils.formatDate(new Date()));
+        valueMap.put("create_time", DateUtils.formatDate(new Date()));
 
         valueMap.put("serial_number", "0x40636002");
         valueMap.put("primary_type.name", "ICS");

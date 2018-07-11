@@ -91,9 +91,13 @@ public class ElasticsearchIndex {
         try {
             IndicesExistsResponse existsResponse = transportClient.admin().indices().exists(new IndicesExistsRequest(indexName)).actionGet();
             return existsResponse.isExists();
+        }catch (Exception e){
+            log.error(e);
+            e.printStackTrace();
         } finally {
             pool.removeClient(elasticsearchClient);
         }
+        return false;
     }
 
     /**
@@ -102,6 +106,10 @@ public class ElasticsearchIndex {
      * @param indexName 索引的名称
      */
     public boolean deleteIndex(String indexName) {
+        if(!exists(indexName)){
+            log.info("索引["+indexName+"] 不存在");
+            return false;
+        }
         ElasticsearchClient elasticsearchClient = pool.buildClient();
         TransportClient transportClient = elasticsearchClient.client();
         boolean deleteSuccess = false;
@@ -130,10 +138,17 @@ public class ElasticsearchIndex {
     public boolean closeIndex(String indexName) {
         ElasticsearchClient elasticsearchClient = pool.buildClient();
         TransportClient transportClient = elasticsearchClient.client();
+        if (!exists(indexName)) {
+            log.info("索引[" + indexName + "] 不存在");
+            return false;
+        }
         boolean closeSuccess = false;
         try {
             CloseIndexResponse closeIndexResponse = transportClient.admin().indices().close(new CloseIndexRequest(indexName)).actionGet();
             closeSuccess = true;
+        }catch (Exception e){
+            log.error(e);
+            e.printStackTrace();
         } finally {
             pool.removeClient(elasticsearchClient);
         }
@@ -147,13 +162,20 @@ public class ElasticsearchIndex {
      * @return
      */
     public boolean openIndex(String indexName) {
+        if (!exists(indexName)) {
+            log.info("索引[" + indexName + "] 不存在");
+            return false;
+        }
         ElasticsearchClient elasticsearchClient = pool.buildClient();
         TransportClient transportClient = elasticsearchClient.client();
         boolean openSuccess = false;
         try {
             OpenIndexResponse openIndexResponse = transportClient.admin().indices().open(new OpenIndexRequest(indexName)).actionGet();
             openSuccess = true;
-        } finally {
+        }catch (Exception e){
+            log.error(e);
+            e.printStackTrace();
+        }finally {
             pool.removeClient(elasticsearchClient);
         }
         return openSuccess;
