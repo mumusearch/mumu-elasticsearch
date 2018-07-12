@@ -34,7 +34,7 @@ public class ElasticsearchBaseQuery {
         if (indexNames == null || indexNames.length == 0) {
             throw new IllegalArgumentException("索引名称[" + indexNames + "]不能为空");
         }
-        this.pageCount = 10;
+        this.pageCount = 5;
         this.beginIndex = 0;
     }
 

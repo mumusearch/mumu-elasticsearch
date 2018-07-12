@@ -94,7 +94,6 @@ public class ElasticsearchBulkTest extends ElasticsearchBaseTest {
             bufferedReader = new BufferedReader(new InputStreamReader(ElasticsearchBaseTest.class.getResourceAsStream("/ipunit_model.json")));
             String readline = null;
             while ((readline = bufferedReader.readLine()) != null) {
-                log.info(readline);
                 Map map = JSON.parseObject(readline, Map.class);
                 datas.add(map);
             }
