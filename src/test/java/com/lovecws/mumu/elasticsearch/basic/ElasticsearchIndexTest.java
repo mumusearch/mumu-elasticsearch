@@ -1,11 +1,7 @@
 package com.lovecws.mumu.elasticsearch.basic;
 
-import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author babymm
@@ -13,7 +9,7 @@ import java.util.List;
  * @Description: 索引创建测试
  * @date 2018-06-03 13:42
  */
-public class ElasticsearchIndexTest extends ElasticsearchBaseTest{
+public class ElasticsearchIndexTest extends ElasticsearchBaseTest {
 
     public static final Logger log = Logger.getLogger(ElasticsearchIndexTest.class);
     public ElasticsearchIndex elasticsearchIndex = new ElasticsearchIndex();
@@ -28,7 +24,9 @@ public class ElasticsearchIndexTest extends ElasticsearchBaseTest{
     public void deleteIndex() {
         boolean deleteIndex = elasticsearchIndex.deleteIndex("gynetres_ignore");
         log.info(deleteIndex ? "索引删除操作成功" : "索引删除操作失败");
-        createIndex();
+        if (deleteIndex) {
+            createIndex();
+        }
     }
 
     @Test

@@ -44,6 +44,12 @@
             <artifactId>commons-pool2</artifactId>
             <version>2.5.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.33</version>
+        </dependency>
     </dependencies>
 
     <!-- 组织机构 -->
@@ -109,7 +115,6 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>config.properties</include>
-                    <include>log4j2.xml</include>
                 </includes>
             </resource>
             <resource>
@@ -117,6 +122,8 @@
                 <filtering>false</filtering>
                 <includes>
                     <include>log4j.properties</include>
+                    <include>log4j2.xml</include>
+                    <include>ipunit_model.json</include>
                 </includes>
             </resource>
         </resources>

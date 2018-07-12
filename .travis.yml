@@ -4,7 +4,7 @@ os: linux
 
 env:
   global:
-    - ELASTICSEARCH_HOST=127.0.0.1:9300
+    - TRAVIS=true
 
 services:
   - docker

@@ -1,10 +1,16 @@
 package com.lovecws.mumu.elasticsearch.basic;
 
+import com.alibaba.fastjson.JSON;
 import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 甘亮
@@ -13,15 +19,21 @@ import java.util.List;
  */
 public class ElasticsearchBaseTest {
 
+    private static final Logger log = Logger.getLogger(ElasticsearchBaseTest.class);
+
     @BeforeClass
-    public void before() {
-        createIndex();
-        createGyNetIndex();
+    public static void before() {
+        String travis = System.getenv("TRAVIS");
+        if (travis != null && Boolean.parseBoolean(travis)) {
+            createIndex();
+            createGyNetIndex();
+            createIPUnitIndex();
+        }
     }
 
-    public ElasticsearchIndex elasticsearchIndex = new ElasticsearchIndex();
+    public static ElasticsearchIndex elasticsearchIndex = new ElasticsearchIndex();
 
-    public void createIndex() {
+    public static void createIndex() {
         List<MappingEntity> mappings = new ArrayList<MappingEntity>();
         mappings.add(new MappingEntity("id", "long", "not_analyzed"));
         mappings.add(new MappingEntity("key", "string", "not_analyzed"));
@@ -38,9 +50,8 @@ public class ElasticsearchBaseTest {
     /**
      * 创建工业互联网索引
      */
-    public void createGyNetIndex() {
+    public static void createGyNetIndex() {
         List<MappingEntity> mappings = new ArrayList<MappingEntity>();
-        mappings.add(new MappingEntity("id", "long", "not_analyzed"));
         mappings.add(new MappingEntity("task_id", "long", "not_analyzed"));
         mappings.add(new MappingEntity("task_instance_id", "long", "not_analyzed"));
         mappings.add(new MappingEntity("create_time", "string", "not_analyzed"));
@@ -90,5 +101,36 @@ public class ElasticsearchBaseTest {
         mappings.add(new MappingEntity("ip_unit", "string", "not_analyzed"));//使用单位名称
 
         elasticsearchIndex.createIndex("gynetres", "gynet", "gynet_type", mappings);
+    }
+
+    public static void createIPUnitIndex() {
+        List<MappingEntity> mappings = new ArrayList<MappingEntity>();
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(ElasticsearchBaseTest.class.getResourceAsStream("/ipunit_model.json")));
+            String readline = null;
+            if ((readline = bufferedReader.readLine()) != null) {
+                Map map = JSON.parseObject(readline, Map.class);
+                for (Object key : map.keySet()) {
+                    mappings.add(new MappingEntity(key.toString(), "string", "analyzed"));
+                }
+            }
+            elasticsearchIndex.createIndex("ipchecker_ipunit", "ipchecker", "ipchecker_type", mappings);
+        } catch (IOException e) {
+            log.error(e);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedReader != null)
+                    bufferedReader.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    public void printlnlist(List<Map<String, Object>> mapList) {
+        for (Map map : mapList) {
+            log.info(JSON.toJSONString(map));
+        }
     }
 }

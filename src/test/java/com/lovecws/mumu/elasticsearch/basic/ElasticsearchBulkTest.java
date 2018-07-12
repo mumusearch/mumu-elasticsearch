@@ -1,8 +1,13 @@
 package com.lovecws.mumu.elasticsearch.basic;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.http.client.utils.DateUtils;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -11,7 +16,9 @@ import java.util.*;
  * @Description: 文档添加
  * @date 2018-06-03 18:34
  */
-public class ElasticsearchBulkTest extends ElasticsearchBaseTest{
+public class ElasticsearchBulkTest extends ElasticsearchBaseTest {
+
+    private static final Logger log = Logger.getLogger(ElasticsearchBulkTest.class);
     public ElasticsearchBulk elasticsearchBulk = new ElasticsearchBulk();
 
     @Test
@@ -77,5 +84,29 @@ public class ElasticsearchBulkTest extends ElasticsearchBaseTest{
             values.add(valueMap);
         }
         elasticsearchBulk.bulk("dns_domainparse_2018_06_02", "2018_06_02", values);
+    }
+
+    @Test
+    public void ipchecker() {
+        BufferedReader bufferedReader = null;
+        List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(ElasticsearchBaseTest.class.getResourceAsStream("/ipunit_model.json")));
+            String readline = null;
+            while ((readline = bufferedReader.readLine()) != null) {
+                log.info(readline);
+                Map map = JSON.parseObject(readline, Map.class);
+                datas.add(map);
+            }
+            elasticsearchBulk.bulk("ipchecker_ipunit", "ipchecker_type", datas);
+        } catch (IOException e) {
+            log.error(e);
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+            }
+        }
     }
 }
