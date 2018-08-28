@@ -45,7 +45,7 @@ public class ElasticsearchBulk {
             indexRequestBuilder.setRouting(uuid);
             indexRequestBuilder.setSource(ElasticsearchMapping.content(valueMap));
             IndexResponse indexResponse = indexRequestBuilder.get();
-            if (indexResponse.status().getStatus()==200) {
+            if (indexResponse.status().getStatus() == 200) {
                 log.info("文档创建成功！");
             } else {
                 indexResponse.writeTo(new OutputStreamStreamOutput(System.out));
@@ -87,7 +87,7 @@ public class ElasticsearchBulk {
         } catch (Exception e) {
             log.error(e);
         } finally {
-            transportClient.close();
+            //transportClient.close();
         }
     }
 

@@ -16,7 +16,7 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
 
     private static final Logger log = Logger.getLogger(ElasticsearchQueryTest.class);
 
-    ElasticsearchQuery elasticsearchQuery = new ElasticsearchQuery(new String[]{"ipchecker_ipunit"}, "ipchecker_type");
+    ElasticsearchQuery elasticsearchQuery = new ElasticsearchQuery(new String[]{"gynetres"}, "gynet_type");
 
     @Test
     public void queryById() {
@@ -26,8 +26,14 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
 
     @Test
     public void scroll() {
-        List<Map<String, Object>> mapList = elasticsearchQuery.scroll(null, null, 100);
-        printlnlist(mapList);
+        List<Map<String, Object>> mapList = elasticsearchQuery.scroll(null, null, 5000);
+//        printlnlist(mapList);
+    }
+
+    @Test
+    public void getPageByScroll() {
+        List<Map<String, Object>> mapList = elasticsearchQuery.getPageByScroll(null, null, 100, 10);
+//        printlnlist(mapList);
     }
 
     @Test
@@ -44,7 +50,7 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
 
     @Test
     public void termQuery() {
-        List<Map<String, Object>> mapList = elasticsearchQuery.termQuery("product.vendorcn", "华");
+        List<Map<String, Object>> mapList = elasticsearchQuery.termQuery("src_ip_area", "湖");
         printlnlist(mapList);
     }
 
@@ -62,7 +68,7 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
 
     @Test
     public void matchQuery() {
-        List<Map<String, Object>> mapList = elasticsearchQuery.matchQuery("product.vendorcn", "海思 海康威视");
+        List<Map<String, Object>> mapList = elasticsearchQuery.matchQuery("src_ip_area", "湖");
         printlnlist(mapList);
     }
 
@@ -95,5 +101,10 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
     public void matchPhraseQuery() {
         List<Map<String, Object>> mapList = elasticsearchQuery.matchPhraseQuery("product.vendorcn", "海康威视");
         printlnlist(mapList);
+    }
+
+    @Test
+    public void agg() {
+        elasticsearchQuery.agg2();
     }
 }

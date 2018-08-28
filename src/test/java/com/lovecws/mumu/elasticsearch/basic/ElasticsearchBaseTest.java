@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class ElasticsearchBaseTest {
         String travis = System.getenv("TRAVIS");
         if (travis != null && Boolean.parseBoolean(travis)) {
             createIndex();
-            createGyNetIndex();
+//            createGyNetIndex();
             createIPUnitIndex();
         }
     }
@@ -50,10 +51,11 @@ public class ElasticsearchBaseTest {
     /**
      * 创建工业互联网索引
      */
-    public static void createGyNetIndex() {
+    @Test
+    public void createGyNetIndex() {
         List<MappingEntity> mappings = new ArrayList<MappingEntity>();
         mappings.add(new MappingEntity("task_id", "long", "not_analyzed"));
-        mappings.add(new MappingEntity("task_instance_id", "long", "not_analyzed"));
+        mappings.add(new MappingEntity("task_instance_id", "string", "not_analyzed"));
         mappings.add(new MappingEntity("create_time", "string", "not_analyzed"));
 
         mappings.add(new MappingEntity("serial_number", "string", "not_analyzed"));
@@ -129,6 +131,9 @@ public class ElasticsearchBaseTest {
     }
 
     public void printlnlist(List<Map<String, Object>> mapList) {
+        if(mapList==null){
+            return;
+        }
         for (Map map : mapList) {
             log.info(JSON.toJSONString(map));
         }

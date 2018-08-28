@@ -1,0 +1,2 @@
+[INFO] [2018-07-31 12:55:39]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.client.ElasticsearchClient | Method = client | Line = 54 ] | MSG = 初始化elasticsearch连接.... |
+[INFO] [2018-07-31 12:55:40]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndex | Method = createIndex | Line = 69 ] | MSG = index [gynetres] create success! |

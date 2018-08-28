@@ -1,0 +1,10 @@
+[INFO] [2018-07-20 09:11:44]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.client.ElasticsearchClient | Method = client | Line = 54 ] | MSG = 初始化elasticsearch连接.... |
+[INFO] [2018-07-20 09:11:44]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndexTest | Method = exists | Line = 20 ] | MSG = 索引存在 |
+[INFO] [2018-07-20 09:12:02]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.client.ElasticsearchClient | Method = client | Line = 54 ] | MSG = 初始化elasticsearch连接.... |
+[INFO] [2018-07-20 09:12:02]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndex | Method = deleteIndex | Line = 119 ] | MSG = 索引[gynetres] 删除成功 |
+[INFO] [2018-07-20 09:12:02]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndexTest | Method = deleteIndex | Line = 26 ] | MSG = 索引删除操作成功 |
+[INFO] [2018-07-20 09:12:02]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndex | Method = createIndex | Line = 51 ] | MSG = index [dns_domainparse_2018_06_02] exists! |
+[INFO] [2018-07-20 09:12:32]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.client.ElasticsearchClient | Method = client | Line = 54 ] | MSG = 初始化elasticsearch连接.... |
+[INFO] [2018-07-20 09:12:32]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndexTest | Method = exists | Line = 20 ] | MSG = 索引不存在 |
+[INFO] [2018-07-20 09:13:40]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.client.ElasticsearchClient | Method = client | Line = 54 ] | MSG = 初始化elasticsearch连接.... |
+[INFO] [2018-07-20 09:13:40]  [ THREAD = main | Class = com.lovecws.mumu.elasticsearch.basic.ElasticsearchIndex | Method = createIndex | Line = 69 ] | MSG = index [gynetres] create success! |

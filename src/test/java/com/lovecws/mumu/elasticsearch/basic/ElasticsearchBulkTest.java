@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -26,7 +27,7 @@ public class ElasticsearchBulkTest extends ElasticsearchBaseTest {
         Map<String, Object> valueMap = new HashMap<String, Object>();
         valueMap.put("id", 1l);
         valueMap.put("task_id", 1l);
-        valueMap.put("task_instance_id", 1l);
+        valueMap.put("task_instance_id", "123");
         valueMap.put("create_time", DateUtils.formatDate(new Date()));
 
         valueMap.put("serial_number", "0x40636002");
@@ -62,7 +63,7 @@ public class ElasticsearchBulkTest extends ElasticsearchBaseTest {
 
         valueMap.put("res", "c\\x00;\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xc1\\xde\\xbe\\xd1\\x00\\x00\\x00\\x00\\x01\\x00\\x0c\\x005\\x00\\x01\\x00\\x00\\x02\\xaf\\x12\\xc0\\xa8\\x03\\xfa\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x00\\x0e\\x00Z\\x00\\x02\\x0ed\\x00\\x02`c@\\x131766-L32BWA B/14.00\\x00");
         valueMap.put("module_num", "1766-L32BWA B/14.00");
-        valueMap.put("html", "{}");
+//        valueMap.put("html", "{}");
         valueMap.put("model", "1766-L32BWA");
         valueMap.put("os", "");
         elasticsearchBulk.index("gynetres", "gynet_type", valueMap);
