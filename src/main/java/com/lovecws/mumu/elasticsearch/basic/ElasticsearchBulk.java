@@ -1,7 +1,7 @@
 package com.lovecws.mumu.elasticsearch.basic;
 
-import com.lovecws.mumu.elasticsearch.client.ElasticsearchClient;
 import com.lovecws.mumu.elasticsearch.common.ElasticsearchMapping;
+import com.lovecws.mumu.elasticsearch.proxy.ElasticsearchThreadLocal;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -24,7 +24,6 @@ import java.util.UUID;
 public class ElasticsearchBulk {
 
     public static final Logger log = Logger.getLogger(ElasticsearchBulk.class);
-    public ElasticsearchClient elasticsearchClient = new ElasticsearchClient();
 
     /**
      * 创建文档
@@ -34,7 +33,7 @@ public class ElasticsearchBulk {
      * @param valueMap  值映射
      */
     public void index(String indexName, String typeName, Map<String, Object> valueMap) {
-        TransportClient transportClient = elasticsearchClient.client();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         try {
             String uuid = UUID.randomUUID().toString().replace("-", "");
             IndexRequestBuilder indexRequestBuilder = transportClient.prepareIndex();
@@ -53,8 +52,8 @@ public class ElasticsearchBulk {
         } catch (Exception e) {
             log.error(e);
             e.printStackTrace();
-        } finally {
-            transportClient.close();
+        }finally {
+            ElasticsearchThreadLocal.cleanup();
         }
     }
 
@@ -66,7 +65,7 @@ public class ElasticsearchBulk {
      * @param values    值映射集合
      */
     public void bulk(String indexName, String typeName, List<Map<String, Object>> values) {
-        TransportClient transportClient = elasticsearchClient.client();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         try {
             BulkRequestBuilder bulkRequestBuilder = transportClient.prepareBulk();
             for (Map<String, Object> valueMap : values) {
@@ -86,8 +85,8 @@ public class ElasticsearchBulk {
             }
         } catch (Exception e) {
             log.error(e);
-        } finally {
-            //transportClient.close();
+        }finally {
+            ElasticsearchThreadLocal.cleanup();
         }
     }
 

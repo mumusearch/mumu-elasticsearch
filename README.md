@@ -7,6 +7,7 @@
 
 
 ## elasticsearch简介
+elasticsearch是一个尽实时搜索的基于lucene的服务组件。lucene是一款实用倒排索引的库，可以基于lucene库创建一个搜索服务。而elasticsearch正是基于lucene创建的多个、分布式的lucene库。
 
 ## elasticsearch 插件
 

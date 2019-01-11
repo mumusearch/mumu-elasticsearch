@@ -14,7 +14,7 @@ public class ElasticsearchPooledObjectFactory implements PooledObjectFactory<Ela
 
     @Override
     public PooledObject<ElasticsearchClient> makeObject() throws Exception {
-        return new DefaultPooledObject(new ElasticsearchClient());
+        return new DefaultPooledObject<ElasticsearchClient>(new ElasticsearchClient());
     }
 
     @Override

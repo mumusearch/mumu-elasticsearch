@@ -1,7 +1,7 @@
 package com.lovecws.mumu.elasticsearch.query;
 
 import com.alibaba.fastjson.JSON;
-import com.lovecws.mumu.elasticsearch.client.ElasticsearchClient;
+import com.lovecws.mumu.elasticsearch.proxy.ElasticsearchThreadLocal;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -44,8 +44,7 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
      * @return
      */
     public Map<String, Object> queryById(String id) {
-        ElasticsearchClient elasticsearchClient = pool.buildClient();
-        TransportClient transportClient = elasticsearchClient.client();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         try {
             GetRequest getRequest = new GetRequest(indexNames[0], typeName, id);
             GetResponse getResponse = transportClient.get(getRequest).get();
@@ -57,7 +56,7 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         } catch (InterruptedException | ExecutionException e) {
             log.error(e);
         } finally {
-            pool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.cleanup();
         }
         return null;
     }
@@ -71,12 +70,11 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
      * @return
      */
     public List<Map<String, Object>> scroll(String fieldName, Object fieldValue, int batchSize) {
-        ElasticsearchClient elasticsearchClient = pool.buildClient();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         String scrollId = null;
         int hits = batchSize;
         List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
         try {
-            TransportClient transportClient = elasticsearchClient.client();
             //查询获取到scrollId
             SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames)
                     .setTypes(typeName)
@@ -112,9 +110,9 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         } finally {
             //清除scrollId
             if (scrollId != null) {
-                elasticsearchClient.client().prepareClearScroll().addScrollId(scrollId).get();
+                transportClient.prepareClearScroll().addScrollId(scrollId).get();
             }
-            pool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.cleanup();
         }
         return datas;
     }
@@ -129,14 +127,13 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
      * @return
      */
     public List<Map<String, Object>> getPageByScroll(String fieldName, Object fieldValue, int currentPage, int pageSize) {
-        ElasticsearchClient elasticsearchClient = pool.buildClient();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         String scrollId = null;
         if (currentPage == 0) {
             currentPage = 1;
         }
         List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
         try {
-            TransportClient transportClient = elasticsearchClient.client();
             //查询获取到scrollId
             SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames)
                     .setTypes(typeName)
@@ -171,9 +168,9 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         } finally {
             //清除scrollId
             if (scrollId != null) {
-                elasticsearchClient.client().prepareClearScroll().addScrollId(scrollId).get();
+                transportClient.prepareClearScroll().addScrollId(scrollId).get();
             }
-            pool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.cleanup();
         }
         return datas;
     }
@@ -316,9 +313,8 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("src_ip_point", "61.183.133.204");
         ValueCountAggregationBuilder countAggregationBuilder = AggregationBuilders.count("count").field("dst_ip_point");
 
-        ElasticsearchClient elasticsearchClient = pool.buildClient();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         try {
-            TransportClient transportClient = elasticsearchClient.client();
             SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames);
             searchRequestBuilder.addAggregation(countAggregationBuilder);
             searchRequestBuilder.setQuery(termQueryBuilder);
@@ -337,7 +333,7 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         } catch (Exception e) {
             log.error(e);
         } finally {
-            pool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.cleanup();
         }
     }
 
@@ -348,9 +344,8 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         ValueCountAggregationBuilder countAggregationBuilder = AggregationBuilders.count("count").field("dst_ip_point");
         termsAggregationBuilder.subAggregation(countAggregationBuilder);
 
-        ElasticsearchClient elasticsearchClient = pool.buildClient();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         try {
-            TransportClient transportClient = elasticsearchClient.client();
             SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames);
             searchRequestBuilder.addAggregation(termsAggregationBuilder);
             searchRequestBuilder.setQuery(termQueryBuilder);
@@ -371,7 +366,7 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
         } catch (Exception e) {
             log.error(e);
         } finally {
-            pool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.cleanup();
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.lovecws.mumu.elasticsearch.query;
 
-import com.lovecws.mumu.elasticsearch.client.ElasticsearchClient;
-import com.lovecws.mumu.elasticsearch.client.ElasticsearchPool;
+import com.lovecws.mumu.elasticsearch.proxy.ElasticsearchThreadLocal;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -21,7 +20,6 @@ import java.util.Map;
 public class ElasticsearchBaseQuery {
 
     public static final Logger log = Logger.getLogger(ElasticsearchBaseQuery.class);
-    public static final ElasticsearchPool pool = new ElasticsearchPool();
 
     public String[] indexNames;
     public String typeName;
@@ -45,9 +43,8 @@ public class ElasticsearchBaseQuery {
      * @return
      */
     public List<Map<String, Object>> query(QueryBuilder queryBuilder) {
-        ElasticsearchClient elasticsearchClient = pool.buildClient();
+        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
         try {
-            TransportClient transportClient = elasticsearchClient.client();
             SearchResponse searchResponse = transportClient.prepareSearch(indexNames)
                     .setSearchType(SearchType.DEFAULT)
                     .setTypes(typeName)
@@ -64,7 +61,7 @@ public class ElasticsearchBaseQuery {
         } catch (Exception e) {
             log.error(e);
         } finally {
-            pool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.cleanup();
         }
         return null;
     }

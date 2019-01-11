@@ -10,6 +10,7 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
  * @author babymm
@@ -22,6 +23,7 @@ public class ElasticsearchClient {
     public static final Logger log = Logger.getLogger(ElasticsearchClient.class);
 
     private TransportClient client = null;
+    private boolean isReturn = false;//标记es练级是否返回到连接池中
 
     public ElasticsearchClient() {
         client = client();
@@ -42,7 +44,7 @@ public class ElasticsearchClient {
         String[] hostnames = ElasticsearchConfig.getArray("elasticsearch.transport.host", ",");
         String[] ports = ElasticsearchConfig.getArray("elasticsearch.transport.port", ",");
         if (hostnames == null || ports == null || hostnames.length != ports.length) {
-            throw new IllegalArgumentException("elasticsearch.transport.host[" + hostnames + "]、elasticsearch.transport.port[" + ports.toString() + "]配置错误");
+            throw new IllegalArgumentException("elasticsearch.transport.host[" + Arrays.toString(hostnames) + "]、elasticsearch.transport.port[" + Arrays.toString(ports) + "]配置错误");
         }
         try {
             TransportAddress[] transportAddresses = new TransportAddress[hostnames.length];
@@ -63,5 +65,13 @@ public class ElasticsearchClient {
         if (client != null) {
             client.close();
         }
+    }
+
+    public boolean isReturn() {
+        return isReturn;
+    }
+
+    public void setReturn(boolean isReturn) {
+        this.isReturn = isReturn;
     }
 }
