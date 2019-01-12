@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -79,12 +78,26 @@ public class ElasticsearchBulkTest extends ElasticsearchBaseTest {
             valueMap.put("dns_id", "1");
             valueMap.put("manager_name", "baidu");
             valueMap.put("domain", "www.baidu.com");
-            valueMap.put("ip_version", 1l);
+            valueMap.put("ip_version", 1L);
             valueMap.put("ip", "192.168.0.25");
-            valueMap.put("visit_count", 2l);
+            valueMap.put("visit_count", 2L);
             values.add(valueMap);
         }
         elasticsearchBulk.bulk("dns_domainparse_2018_06_02", "2018_06_02", values);
+    }
+
+    @Test
+    public void bulkTemplateIndex() {
+        List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < 100; i++) {
+            Map<String, Object> valueMap = new HashMap<String, Object>();
+            valueMap.put("task_id", String.valueOf(i));
+            valueMap.put("task_instance_id", "baidu");
+            valueMap.put("create_time", "1");
+            valueMap.put("edit_time", "1");
+            values.add(valueMap);
+        }
+        elasticsearchBulk.bulk("gynetres_2018_06_02", "gynet_type", values);
     }
 
     @Test

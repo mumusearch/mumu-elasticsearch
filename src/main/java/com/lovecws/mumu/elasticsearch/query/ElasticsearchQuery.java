@@ -1,6 +1,5 @@
 package com.lovecws.mumu.elasticsearch.query;
 
-import com.alibaba.fastjson.JSON;
 import com.lovecws.mumu.elasticsearch.proxy.ElasticsearchThreadLocal;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -11,12 +10,6 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,62 +55,6 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
     }
 
     /**
-     * scroll查询
-     *
-     * @param fieldName  字段名称
-     * @param fieldValue 字段值
-     * @param batchSize  批量大小
-     * @return
-     */
-    public List<Map<String, Object>> scroll(String fieldName, Object fieldValue, int batchSize) {
-        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
-        String scrollId = null;
-        int hits = batchSize;
-        List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
-        try {
-            //查询获取到scrollId
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames)
-                    .setTypes(typeName)
-                    .setScroll("5m")
-                    .setFrom(0)
-                    .setSearchType(SearchType.DEFAULT)
-                    .setSize(batchSize);
-            if (fieldName != null && fieldValue != null) {
-                searchRequestBuilder.setQuery(new TermQueryBuilder(fieldName, fieldValue));
-            }
-            SearchResponse searchResponse = searchRequestBuilder.get();
-            scrollId = searchResponse.getScrollId();
-            long totalHits = searchResponse.getHits().getTotalHits();
-            log.info("scrollId:" + scrollId);
-            log.info("totalHits:" + searchResponse.getHits().getTotalHits());
-            //scroll查询 当获取的数据量小于批处理数量 则退出scroll查询
-            while (totalHits > 0 && hits == batchSize) {
-                SearchScrollRequest searchScrollRequest = new SearchScrollRequest(scrollId);
-                searchScrollRequest.scrollId(scrollId);
-                searchScrollRequest.scroll("5m");
-                SearchResponse response = transportClient.searchScroll(searchScrollRequest).get();
-                hits = response.getHits().getHits().length;
-                scrollId = response.getScrollId();
-                for (SearchHit searchHit : response.getHits()) {
-                    datas.add(searchHit.getSource());
-                }
-                log.info("hits:" + hits);
-                log.info("scrollId:" + scrollId);
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error(e);
-            e.printStackTrace();
-        } finally {
-            //清除scrollId
-            if (scrollId != null) {
-                transportClient.prepareClearScroll().addScrollId(scrollId).get();
-            }
-            ElasticsearchThreadLocal.cleanup();
-        }
-        return datas;
-    }
-
-    /**
      * 使用scroll分页获取es数据
      *
      * @param fieldName   过滤字段名称
@@ -127,52 +64,11 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
      * @return
      */
     public List<Map<String, Object>> getPageByScroll(String fieldName, Object fieldValue, int currentPage, int pageSize) {
-        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
-        String scrollId = null;
-        if (currentPage == 0) {
-            currentPage = 1;
+        QueryBuilder queryBuilder = null;
+        if (fieldName != null && fieldValue != null) {
+            queryBuilder = new TermQueryBuilder(fieldName, fieldValue);
         }
-        List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
-        try {
-            //查询获取到scrollId
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames)
-                    .setTypes(typeName)
-                    .setScroll("5m")
-                    .setFrom(0)
-                    .setSearchType(SearchType.DEFAULT)
-                    .setSize(pageSize);
-            if (fieldName != null && fieldValue != null) {
-                searchRequestBuilder.setQuery(new TermQueryBuilder(fieldName, fieldValue));
-            }
-            SearchResponse searchResponse = searchRequestBuilder.get();
-            scrollId = searchResponse.getScrollId();
-            //获取第currentPage页的数据
-            int current_page = 1;
-            while (current_page <= currentPage) {
-                SearchScrollRequest searchScrollRequest = new SearchScrollRequest(scrollId);
-                searchScrollRequest.scrollId(scrollId);
-                searchScrollRequest.scroll("5m");
-                SearchResponse response = transportClient.searchScroll(searchScrollRequest).get();
-                scrollId = response.getScrollId();
-                if (current_page == currentPage) {
-                    for (SearchHit searchHit : response.getHits()) {
-                        datas.add(searchHit.getSource());
-                        log.info(searchHit.getId());
-                    }
-                }
-                current_page++;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error(e);
-            e.printStackTrace();
-        } finally {
-            //清除scrollId
-            if (scrollId != null) {
-                transportClient.prepareClearScroll().addScrollId(scrollId).get();
-            }
-            ElasticsearchThreadLocal.cleanup();
-        }
-        return datas;
+        return getPageByScroll(queryBuilder, currentPage, pageSize);
     }
 
     /**
@@ -307,66 +203,5 @@ public class ElasticsearchQuery extends ElasticsearchBaseQuery {
     public List<Map<String, Object>> matchPhraseQuery(String fieldName, String query) {
         QueryBuilder queryBuilder = QueryBuilders.matchPhraseQuery(fieldName, query);
         return query(queryBuilder);
-    }
-
-    public void agg() {
-        TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("src_ip_point", "61.183.133.204");
-        ValueCountAggregationBuilder countAggregationBuilder = AggregationBuilders.count("count").field("dst_ip_point");
-
-        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
-        try {
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames);
-            searchRequestBuilder.addAggregation(countAggregationBuilder);
-            searchRequestBuilder.setQuery(termQueryBuilder);
-
-            SearchResponse searchResponse = searchRequestBuilder.get();
-            SearchHits hits = searchResponse.getHits();
-            for (SearchHit hit : hits) {
-                System.out.println(JSON.toJSONString(hit.getSource()));
-            }
-            Terms terms = searchResponse.getAggregations().get("count");
-            List<? extends Terms.Bucket> buckets = terms.getBuckets();
-            for (Terms.Bucket bucket : buckets) {
-                System.out.println(JSON.toJSONString(bucket));
-            }
-
-        } catch (Exception e) {
-            log.error(e);
-        } finally {
-            ElasticsearchThreadLocal.cleanup();
-        }
-    }
-
-    public void agg2() {
-        TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("src_ip_point", "61.183.133.204");
-
-        TermsAggregationBuilder termsAggregationBuilder = AggregationBuilders.terms("group").field("src_ip_point").size(1);
-        ValueCountAggregationBuilder countAggregationBuilder = AggregationBuilders.count("count").field("dst_ip_point");
-        termsAggregationBuilder.subAggregation(countAggregationBuilder);
-
-        TransportClient transportClient = ElasticsearchThreadLocal.get().client();
-        try {
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(indexNames);
-            searchRequestBuilder.addAggregation(termsAggregationBuilder);
-            searchRequestBuilder.setQuery(termQueryBuilder);
-
-            SearchResponse searchResponse = searchRequestBuilder.get();
-            SearchHits hits = searchResponse.getHits();
-            for (SearchHit hit : hits) {
-                System.out.println(JSON.toJSONString(hit.getSource()));
-            }
-            Terms terms = searchResponse.getAggregations().get("group");
-            List<? extends Terms.Bucket> buckets = terms.getBuckets();
-            for (Terms.Bucket bucket : buckets) {
-                System.out.println(bucket.getDocCount());
-                Aggregation count = bucket.getAggregations().get("count");
-                System.out.println(count);
-            }
-
-        } catch (Exception e) {
-            log.error(e);
-        } finally {
-            ElasticsearchThreadLocal.cleanup();
-        }
     }
 }

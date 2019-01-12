@@ -1,7 +1,11 @@
 package com.lovecws.mumu.elasticsearch.basic;
 
+import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author babymm
@@ -41,4 +45,5 @@ public class ElasticsearchIndexTest extends ElasticsearchBaseTest {
         boolean deleteIndex = elasticsearchIndex.openIndex("dns_domainparse_2018_06_02");
         log.info(deleteIndex ? "索引打开操作成功" : "索引打开操作失败");
     }
+
 }

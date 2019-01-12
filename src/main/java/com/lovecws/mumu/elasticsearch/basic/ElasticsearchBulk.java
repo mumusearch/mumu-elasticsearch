@@ -51,7 +51,6 @@ public class ElasticsearchBulk {
             }
         } catch (Exception e) {
             log.error(e);
-            e.printStackTrace();
         }finally {
             ElasticsearchThreadLocal.cleanup();
         }

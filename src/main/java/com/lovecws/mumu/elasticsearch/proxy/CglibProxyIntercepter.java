@@ -45,7 +45,9 @@ public class CglibProxyIntercepter implements MethodInterceptor {
      */
     public void after() {
         ElasticsearchClient elasticsearchClient = ElasticsearchThreadLocal.get();
-        elasticsearchPool.removeClient(elasticsearchClient);
-        ElasticsearchThreadLocal.threadLocal.remove();
+        if (!elasticsearchClient.isReturn()) {
+            elasticsearchPool.removeClient(elasticsearchClient);
+            ElasticsearchThreadLocal.threadLocal.remove();
+        }
     }
 }

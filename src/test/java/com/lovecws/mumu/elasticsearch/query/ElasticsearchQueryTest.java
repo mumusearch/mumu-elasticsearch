@@ -16,24 +16,24 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
 
     private static final Logger log = Logger.getLogger(ElasticsearchQueryTest.class);
 
-    ElasticsearchQuery elasticsearchQuery = new ElasticsearchQuery(new String[]{"gynetres"}, "gynet_type");
+    ElasticsearchQuery elasticsearchQuery = new ElasticsearchQuery(new String[]{"guangdong_jmr"}, "guangdong_jmr_type");
 
     @Test
     public void queryById() {
-        Map<String, Object> stringObjectMap = elasticsearchQuery.queryById("a26715312de04477ac3db6ba6e961c28");
+        Map<String, Object> stringObjectMap = elasticsearchQuery.queryById("88f5da6b767fedcec43bc1976bcb83fa");
         log.info(stringObjectMap);
     }
 
     @Test
     public void scroll() {
         List<Map<String, Object>> mapList = elasticsearchQuery.scroll(null, null, 5000);
-//        printlnlist(mapList);
+        printlnlist(mapList);
     }
 
     @Test
     public void getPageByScroll() {
-        List<Map<String, Object>> mapList = elasticsearchQuery.getPageByScroll(null, null, 100, 10);
-//        printlnlist(mapList);
+        List<Map<String, Object>> mapList = elasticsearchQuery.getPageByScroll(null, null, 1040, 10);
+        printlnlist(mapList);
     }
 
     @Test
@@ -101,10 +101,5 @@ public class ElasticsearchQueryTest extends ElasticsearchBaseTest {
     public void matchPhraseQuery() {
         List<Map<String, Object>> mapList = elasticsearchQuery.matchPhraseQuery("product.vendorcn", "海康威视");
         printlnlist(mapList);
-    }
-
-    @Test
-    public void agg() {
-        elasticsearchQuery.agg2();
     }
 }
