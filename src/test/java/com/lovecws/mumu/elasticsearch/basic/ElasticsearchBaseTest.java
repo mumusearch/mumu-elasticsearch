@@ -26,9 +26,9 @@ public class ElasticsearchBaseTest {
     public static void before() {
         String travis = System.getenv("TRAVIS");
         if (travis != null && Boolean.parseBoolean(travis)) {
-            createIndex();
+//            createIndex();
 //            createGyNetIndex();
-            createIPUnitIndex();
+//            createIPUnitIndex();
         }
     }
 
@@ -131,7 +131,7 @@ public class ElasticsearchBaseTest {
     }
 
     public void printlnlist(List<Map<String, Object>> mapList) {
-        if(mapList==null){
+        if (mapList == null) {
             return;
         }
         for (Map map : mapList) {
