@@ -5,6 +5,7 @@ import com.lovecws.mumu.elasticsearch.common.ElasticsearchMapping;
 import com.lovecws.mumu.elasticsearch.entity.MappingEntity;
 import com.lovecws.mumu.elasticsearch.proxy.ElasticsearchThreadLocal;
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
@@ -51,8 +52,9 @@ public class ElasticsearchTemplate {
 
             PutIndexTemplateResponse templateResponse = transportClient.admin().indices()
                     .preparePutTemplate(templateName)
+                    .setTemplate(templateName)
                     .setSettings(settings)
-                    .setAliases(aliasName)
+                    .addAlias(new Alias(aliasName))
                     .addMapping(typeName, ElasticsearchMapping.mapping(typeName, mappings))
                     .get();
             if (templateResponse.isAcknowledged()) {
@@ -61,6 +63,7 @@ public class ElasticsearchTemplate {
             }
         } catch (Exception e) {
             log.error(e);
+            e.printStackTrace();
         } finally {
             ElasticsearchThreadLocal.cleanup();
         }

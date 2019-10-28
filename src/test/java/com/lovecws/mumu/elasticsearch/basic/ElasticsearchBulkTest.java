@@ -97,7 +97,7 @@ public class ElasticsearchBulkTest extends ElasticsearchBaseTest {
             valueMap.put("edit_time", "1");
             values.add(valueMap);
         }
-        elasticsearchBulk.bulk("gynetres_2018_06_02", "gynet_type", values);
+        elasticsearchBulk.bulk("dns_20191028_domaininfo", "domaininfo", values);
     }
 
     @Test

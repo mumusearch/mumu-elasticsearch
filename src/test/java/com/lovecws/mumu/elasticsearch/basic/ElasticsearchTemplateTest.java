@@ -26,7 +26,7 @@ public class ElasticsearchTemplateTest extends ElasticsearchBaseTest {
         mappings.add(new MappingEntity("task_instance_id", "string", "not_analyzed"));
         mappings.add(new MappingEntity("create_time", "string", "not_analyzed"));
 
-        elasticsearchTemplate.createTemplate("gynetres_*", "gynet", "gynet", mappings);
+        elasticsearchTemplate.createTemplate("dns_*_domaininfo", "domaininfo", "domaininfo", mappings);
     }
 
     @Test
